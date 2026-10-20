@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - They & Them Bazar Novedades</title>
+    <!-- Iconos de FontAwesome para las categorías -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --bg-color: #f3f8f4;
+            --cat-active: #8e44ad;
+            --success-color: #27ae60;
+            --danger-color: #c0392b;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: #333;
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        header p {
+            margin: 0.5rem 0 0;
+            color: #bdc3c7;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        /* BUSCADOR */
+        .search-box {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .search-box input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* CATEGORÍAS E ÍCONOS */
+        .categories-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .category-btn {
+            background-color: #fff;
+            border: 2px solid #ddd;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .category-btn i {
+            font-size: 1.1rem;
+        }
+        .category-btn:hover, .category-btn.active {
+            background-color: var(--cat-active);
+            color: white;
+            border-color: var(--cat-active);
+            box-shadow: 0 4px 10px rgba(142, 68, 173, 0.25);
+        }
+
+        /* GRID DE PRODUCTOS */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .card {
+            background: rgba(252, 249, 251, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            background-color: #eee;
+            cursor: zoom-in;
+        }
+        .card-content {
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        
+        /* TAGS Y ESTADO STOCK */
+        .card-header-tags {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .card-badge {
+            background-color: #eee;
+            color: #666;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .stock-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .stock-badge.available {
+            background-color: #e8f8f0;
+            color: var(--success-color);
+        }
+        .stock-badge.unavailable {
+            background-color: #fdeaea;
+            color: var(--danger-color);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            margin: 0.3rem 0;
+            color: var(--primary-color);
+        }
+        .card-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.6rem;
+        }
+
+        /* TOGGLE DE DISPONIBILIDAD */
+        .status-toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f8f9fa;
+            border: 1px dashed #ccc;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .status-toggle-container span {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--success-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        .price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        .btn-whatsapp {
+            background-color: #25d366;
+            color: white;
+            padding: 0.5rem 0.9rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-whatsapp:hover {
+            background-color: #1ebe5d;
+        }
+        .btn-whatsapp.disabled {
+            background-color: #bdc3c7;
+            pointer-events: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #2c3e50;
+            color: white;
+            margin-top: 3rem;
+        }
+
+        /* MODAL DE IMAGEN */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+            cursor: zoom-out;
+        }
+        .image-modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 5px;
+            animation: zoom 0.3s;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        @keyframes zoom {
+            from {transform: scale(0)}
+            to {transform: scale(1)}
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>They & Them Bazar Novedades</h1>
+        <p>Encuentra lo que buscas al mejor precio en Guajaló, Quito</p>
+        <p>¡¡ANÍMATE!!</p>
+    </header>
+
+    <div class="container">
+        <!-- BUSCADOR -->
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Buscar productos..." onkeyup="filterProducts()">
+        </div>
+
+        <!-- BOTONES DE CATEGORÍA CON ÍCONOS -->
+        <div class="categories-container">
+            <button class="category-btn active" onclick="filterCategory('todos', this)">
+                <i class="fa-solid fa-border-all"></i> Todos
+            </button>
+            <button class="category-btn" onclick="filterCategory('tecnologia', this)">
+                <i class="fa-solid fa-mobile-screen-button"></i> Tecnología
+            </button>
+            <button class="category-btn" onclick="filterCategory('perfumeria', this)">
+                <i class="fa-solid fa-spray-can"></i> Perfumería
+            </button>
+            <button class="category-btn" onclick="filterCategory('cosmeticos', this)">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Cosméticos
+            </button>
+        </div>
+
+        <!-- GRID DE PRODUCTOS -->
+        <div class="grid" id="productGrid">
+            
+            <!-- PRODUCTO 1: COSMÉTICOS -->
+            <div class="card" data-category="cosmeticos" data-name="rimel mega full size esika maquillaje cosmetico">
+                <img src="img/3212.jpg" alt="Rimel Mega Full Size" class="zoomable">
+                <div class="card-content">
+                    <div class="card-header-tags">
+                        <span class="card-badge">Cosméticos</span>
+                        <span class="stock-badge available" id="badge-p1">
+                            <i class="fa-solid fa-circle-check"></i> Disponible
+                        </span>
+                    </div>
+                    <h3 class="card-title">Rímel Mega Full Size</h3>
+                    <p class="card-description">Efecto de largo extremo de raíz a punta. Fórmula ligera en gel.</p>
+                    <p class="card-description"><strong>Versión:</strong> A prueba de agua (Waterproof).</p>
+                    
+                    <div class="status-toggle-container">
+                        <span>Estado producto:</span>
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleStock('p1', this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="price">$6.00</span>
+                        <a href="https://wa.me/593982543871?text=Hola,%20estoy%20interesado%20en%20el%20Rimel%20Mega%20Full%20Size" id="btn-p1" class="btn-whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i> Pedir</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCTO 2: TECNOLOGÍA -->
+            <div class="card" data-category="tecnologia" data-name="power bank anker 20000mah cargador bateria">
+                <img src="img/194644127640.jpg" alt="Power Bank Anker" class="zoomable">
+                <div class="card-content">
+                    <div class="card-header-tags">
+                        <span class="card-badge">Tecnología</span>
+                        <span class="stock-badge available" id="badge-p2">
+                            <i class="fa-solid fa-circle-check"></i> Disponible
+                        </span>
+                    </div>
+                    <h3 class="card-title">Power Bank Anker 20000mAh</h3>
+                    <p class="card-description">Carga rápida portátil ideal para mantener tus dispositivos encendidos todo el día. Cuenta con 3 salidas.</p>
+                    
+                    <div class="status-toggle-container">
+                        <span>Estado producto:</span>
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleStock('p2', this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="price">$35.00</span>
+                        <a href="https://wa.me/593982543871?text=Hola,%20estoy%20interesado%20en%20el%20Power%20Bank%20Anker" id="btn-p2" class="btn-whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i> Pedir</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCTO 3: PERFUMERÍA -->
+            <div class="card" data-category="perfumeria" data-name="perfume ohm yanbal hombre colonia">
+                <img src="img/3192.jpg" alt="Perfume OHM Yanbal" class="zoomable">
+                <div class="card-content">
+                    <div class="card-header-tags">
+                        <span class="card-badge">Perfumería</span>
+                        <span class="stock-badge available" id="badge-p3">
+                            <i class="fa-solid fa-circle-check"></i> Disponible
+                        </span>
+                    </div>
+                    <h3 class="card-title">Perfume OHM Yanbal</h3>
+                    <p class="card-description">Perfume para hombre herbal cítrico con notas de toronja rosada, salvia y cuero.</p>
+                    
+                    <div class="status-toggle-container">
+                        <span>Estado producto:</span>
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleStock('p3', this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="price">$30.00</span>
+                        <a href="https://wa.me/593982543871?text=Hola,%20estoy%20interesado%20en%20el%20Perfume%20OHM%20Yanbal" id="btn-p3" class="btn-whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i> Pedir</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCTO 4: PERFUMERÍA -->
+            <div class="card" data-category="perfumeria" data-name="sweet black intense cyzone perfume colonia mujer">
+                <img src="img/3709.jpg" alt="Sweet Black Intense Cyzone" class="zoomable">
+                <div class="card-content">
+                    <div class="card-header-tags">
+                        <span class="card-badge">Perfumería</span>
+                        <span class="stock-badge available" id="badge-p4">
+                            <i class="fa-solid fa-circle-check"></i> Disponible
+                        </span>
+                    </div>
+                    <h3 class="card-title">SWEET BLACK INTENSE 50ML CYZONE</h3>
+                    <p class="card-description">Fragancia femenina perteneciente a la familia olfativa Oriental Amaderada (oriental dulce).</p>
+                    
+                    <div class="status-toggle-container">
+                        <span>Estado producto:</span>
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleStock('p4', this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="price">$15.00</span>
+                        <a href="https://wa.me/593982543871?text=Hola,%20estoy%20interesado%20en%20el%20Sweet%20Black%20Intense%20Cyzone" id="btn-p4" class="btn-whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i> Pedir</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 They & Them Bazar Novedades. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- LUPA DE IMAGEN -->
+    <div id="myModal" class="image-modal">
+        <span class="close-modal">&times;</span>
+        <img class="image-modal-content" id="imgModalTarget">
+    </div>
+
+    <script>
+        let selectedCategory = 'todos';
+
+        // CAMBIAR ESTADO DE STOCK (DISPONIBLE / AGOTADO)
+        function toggleStock(id, checkbox) {
+            const badge = document.getElementById('badge-' + id);
+            const btn = document.getElementById('btn-' + id);
+
+            if (checkbox.checked) {
+                badge.className = "stock-badge available";
+                badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Disponible';
+                btn.className = "btn-whatsapp";
+                btn.innerHTML = '<i class="fa-brands fa-whatsapp"></i> Pedir';
+            } else {
+                badge.className = "stock-badge unavailable";
+                badge.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Agotado';
+                btn.className = "btn-whatsapp disabled";
+                btn.innerHTML = '<i class="fa-brands fa-whatsapp"></i> Agotado';
+            }
+        }
+
+        // LÓGICA DE FILTRADO POR CATEGORÍA
+        function filterCategory(category, btnElement) {
+            selectedCategory = category;
+            
+            let buttons = document.getElementsByClassName('category-btn');
+            for (let btn of buttons) {
+                btn.classList.remove('active');
+            }
+            btnElement.classList.add('active');
+
+            filterProducts();
+        }
+
+        // LÓGICA DE BUSCADOR Y CATEGORÍAS COMBINADOS
+        function filterProducts() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('card');
+
+            for (let card of cards) {
+                let name = card.getAttribute('data-name');
+                let category = card.getAttribute('data-category');
+
+                let matchesSearch = name.includes(input);
+                let matchesCategory = (selectedCategory === 'todos' || category === selectedCategory);
+
+                if (matchesSearch && matchesCategory) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        }
+
+        // LÓGICA DE LUPA / AMPLIACIÓN DE IMÁGENES
+        const modal = document.getElementById("myModal");
+        const modalImg = document.getElementById("imgModalTarget");
+        const spanClose = document.getElementsByClassName("close-modal")[0];
+        const zoomableImages = document.getElementsByClassName('zoomable');
+
+        for (let img of zoomableImages) {
+            img.onclick = function(){
+                modal.style.display = "block";
+                modalImg.src = this.src;
+            }
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        spanClose.onclick = closeModal;
+        modal.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
